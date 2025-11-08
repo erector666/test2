@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { PlayIcon, PauseIcon, StopIcon, BellIcon } from '@heroicons/react/24/solid';
+import { useState, useEffect } from 'react';
+import { ClockIcon, BellIcon, CheckIcon } from '@heroicons/react/24/outline';
 
-const AlarmClock = () => {
+export default function AlarmClock() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [alarmTime, setAlarmTime] = useState('');
-  const [alarms, setAlarms] = useState([]);
-  const [isAlarmRinging, setIsAlarmRinging] = useState(false);
-  const [alarmAudio] = useState(new Audio('/alarm.mp3'));
+  const [isAlarmSet, setIsAlarmSet] = useState(false);
+  const [isAlarmTriggered, setIsAlarmTriggered] = useState(false);
+  const [isSettingAlarm, setIsSettingAlarm] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -17,192 +18,176 @@ const AlarmClock = () => {
   }, []);
 
   useEffect(() => {
-    const now = currentTime.toLocaleTimeString('en-US', { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-    
-    alarms.forEach((alarm, index) => {
-      if (alarm.time === now && alarm.active && !isAlarmRinging) {
-        setIsAlarmRinging(true);
-        alarmAudio.play().catch(e => console.log('Audio play failed:', e));
+    if (isAlarmSet && alarmTime) {
+      const now = new Date();
+      const [hours, minutes] = alarmTime.split(':');
+      const alarmDate = new Date();
+      alarmDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      
+      if (alarmDate <= now) {
+        alarmDate.setDate(alarmDate.getDate() + 1);
       }
-    });
-  }, [currentTime, alarms, isAlarmRinging, alarmAudio]);
+      
+      if (now.getHours() === alarmDate.getHours() && 
+          now.getMinutes() === alarmDate.getMinutes()) {
+        setIsAlarmTriggered(true);
+      }
+    }
+  }, [currentTime, alarmTime, isAlarmSet]);
 
-  const addAlarm = () => {
+  const handleSetAlarm = () => {
     if (alarmTime) {
-      const newAlarm = {
-        id: Date.now(),
-        time: alarmTime,
-        active: true
-      };
-      setAlarms([...alarms, newAlarm]);
-      setAlarmTime('');
+      setIsSettingAlarm(true);
+      
+      // Simulate setting process with animation
+      setTimeout(() => {
+        setIsAlarmSet(true);
+        setIsSettingAlarm(false);
+        setShowSuccessAnimation(true);
+        
+        // Hide success animation after 2 seconds
+        setTimeout(() => {
+          setShowSuccessAnimation(false);
+        }, 2000);
+      }, 1000);
     }
   };
 
-  const toggleAlarm = (id) => {
-    setAlarms(alarms.map(alarm => 
-      alarm.id === id ? { ...alarm, active: !alarm.active } : alarm
-    ));
-  };
-
-  const deleteAlarm = (id) => {
-    setAlarms(alarms.filter(alarm => alarm.id !== id));
-  };
-
-  const stopAlarm = () => {
-    setIsAlarmRinging(false);
-    alarmAudio.pause();
-    alarmAudio.currentTime = 0;
+  const handleCancelAlarm = () => {
+    setIsAlarmSet(false);
+    setIsAlarmTriggered(false);
+    setAlarmTime('');
   };
 
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {
-      hour12: false,
+      hour12: true,
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit'
     });
   };
 
-  const formatDate = (date) => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Macedonian Flag Background */}
-      <div className="absolute inset-0 z-0">
-        {/* Red sections */}
-        <div className="absolute top-0 left-0 w-full h-1/3 bg-red-600"></div>
-        <div className="absolute bottom-0 left-0 w-full h-1/3 bg-red-600"></div>
-        
-        {/* Yellow middle section */}
-        <div className="absolute top-1/3 left-0 w-full h-1/3 bg-yellow-400"></div>
-        
-        {/* Sun in center */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="w-32 h-32 bg-yellow-500 rounded-full relative">
-            {/* Sun rays */}
-            {[...Array(16)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-1 h-8 bg-yellow-500"
-                style={{
-                  top: '-16px',
-                  left: '50%',
-                  transformOrigin: '50% 80px',
-                  transform: `translateX(-50%) rotate(${i * 22.5}deg)`
-                }}
-              />
-            ))}
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center p-4">
+      <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/20">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <ClockIcon className="w-8 h-8 text-white mr-2" />
+            <h1 className="text-2xl font-bold text-white">Alarm Clock</h1>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
-        <div className="bg-black bg-opacity-70 backdrop-blur-sm rounded-3xl p-8 max-w-md w-full shadow-2xl">
-          {/* Digital Clock Display */}
-          <div className="text-center mb-8">
-            <div className="text-6xl font-mono font-bold text-white mb-2 tracking-wider">
+        {/* Current Time Display */}
+        <div className="text-center mb-8">
+          <div className="bg-black/20 rounded-2xl p-6 border border-white/10">
+            <p className="text-4xl font-mono font-bold text-white mb-2">
               {formatTime(currentTime)}
-            </div>
-            <div className="text-lg text-gray-300">
-              {formatDate(currentTime)}
-            </div>
+            </p>
+            <p className="text-white/70 text-sm">
+              {currentTime.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </p>
           </div>
+        </div>
 
-          {/* Alarm Input Section */}
-          <div className="mb-6">
-            <label className="block text-white text-sm font-medium mb-2">
+        {/* Alarm Setting */}
+        <div className="space-y-6">
+          <div>
+            <label className="block text-white/90 text-sm font-medium mb-2">
               Set Alarm Time
             </label>
-            <div className="flex gap-2">
-              <input
-                type="time"
-                value={alarmTime}
-                onChange={(e) => setAlarmTime(e.target.value)}
-                className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
-              />
+            <input
+              type="time"
+              value={alarmTime}
+              onChange={(e) => setAlarmTime(e.target.value)}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm"
+              disabled={isAlarmSet}
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            {!isAlarmSet ? (
               <button
-                onClick={addAlarm}
-                className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
+                onClick={handleSetAlarm}
+                disabled={!alarmTime || isSettingAlarm}
+                className={`w-full py-3 px-6 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 ${
+                  isSettingAlarm
+                    ? 'bg-yellow-500/20 text-yellow-300 animate-pulse cursor-not-allowed'
+                    : alarmTime
+                    ? 'bg-green-500/20 hover:bg-green-500/30 text-green-300 hover:scale-105 transform'
+                    : 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
+                }`}
               >
-                <BellIcon className="w-4 h-4" />
-                Add
+                {isSettingAlarm ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-yellow-300"></div>
+                    <span>Setting Alarm...</span>
+                  </>
+                ) : (
+                  <>
+                    <BellIcon className="w-5 h-5" />
+                    <span>Set Alarm</span>
+                  </>
+                )}
               </button>
-            </div>
+            ) : (
+              <button
+                onClick={handleCancelAlarm}
+                className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-300 py-3 px-6 rounded-xl font-medium transition-all duration-300 hover:scale-105 transform flex items-center justify-center space-x-2"
+              >
+                <span>Cancel Alarm</span>
+              </button>
+            )}
           </div>
 
-          {/* HelloWorld Button */}
-          <div className="mb-6">
-            <button
-              onClick={() => alert('Hello World!')}
-              className="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 font-medium"
-            >
-              Hello World
-            </button>
-          </div>
-
-          {/* Alarms List */}
-          {alarms.length > 0 && (
-            <div className="mb-6">
-              <h3 className="text-white text-sm font-medium mb-3">Active Alarms</h3>
-              <div className="space-y-2">
-                {alarms.map((alarm) => (
-                  <div key={alarm.id} className="flex items-center justify-between bg-gray-800 rounded-lg p-3">
-                    <span className={`font-mono text-lg ${alarm.active ? 'text-green-400' : 'text-gray-500'}`}>
-                      {alarm.time}
-                    </span>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => toggleAlarm(alarm.id)}
-                        className={`p-2 rounded-lg transition-colors duration-200 ${
-                          alarm.active 
-                            ? 'bg-red-600 hover:bg-red-700 text-white' 
-                            : 'bg-red-600 hover:bg-red-700 text-white'
-                        }`}
-                      >
-                        {alarm.active ? <PauseIcon className="w-4 h-4" /> : <PlayIcon className="w-4 h-4" />}
-                      </button>
-                      <button
-                        onClick={() => deleteAlarm(alarm.id)}
-                        className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
-                      >
-                        <StopIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+          {/* Alarm Status with Animation */}
+          {isAlarmSet && (
+            <div className={`bg-green-500/20 border border-green-400/30 rounded-xl p-4 transition-all duration-500 ${
+              showSuccessAnimation ? 'animate-pulse scale-105' : 'animate-slide-in'
+            }`}>
+              <div className="flex items-center space-x-3">
+                <div className={`transition-all duration-500 ${
+                  showSuccessAnimation ? 'animate-bounce' : ''
+                }`}>
+                  {showSuccessAnimation ? (
+                    <CheckIcon className="w-6 h-6 text-green-300" />
+                  ) : (
+                    <BellIcon className="w-6 h-6 text-green-300 animate-pulse" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-green-300 font-medium">
+                    {showSuccessAnimation ? 'Alarm Set Successfully!' : 'Alarm Set'}
+                  </p>
+                  <p className="text-green-200/80 text-sm">
+                    Will ring at {alarmTime}
+                  </p>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Alarm Ringing Alert */}
-          {isAlarmRinging && (
-            <div className="bg-red-600 text-white p-4 rounded-lg mb-4 text-center animate-pulse">
-              <div className="text-xl font-bold mb-2">⏰ ALARM RINGING! ⏰</div>
-              <button
-                onClick={stopAlarm}
-                className="px-6 py-2 bg-red-800 hover:bg-red-900 text-white rounded-lg transition-colors duration-200"
-              >
-                Stop Alarm
-              </button>
+          {/* Alarm Triggered */}
+          {isAlarmTriggered && (
+            <div className="bg-red-500/20 border border-red-400/30 rounded-xl p-4 animate-bounce">
+              <div className="flex items-center space-x-3">
+                <BellIcon className="w-6 h-6 text-red-300 animate-ping" />
+                <div>
+                  <p className="text-red-300 font-bold animate-pulse">ALARM RINGING!</p>
+                  <p className="text-red-200/80 text-sm">Time to wake up!</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
       </div>
     </div>
   );
-};
-
-export default AlarmClock;
+}

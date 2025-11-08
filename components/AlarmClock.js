@@ -1,27 +1,50 @@
 import { useState, useEffect } from 'react';
-import { ClockIcon, BellIcon, PauseIcon, PlayIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 export default function AlarmClock() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [alarmTime, setAlarmTime] = useState('');
   const [isAlarmSet, setIsAlarmSet] = useState(false);
   const [isAlarmRinging, setIsAlarmRinging] = useState(false);
+  const [alarms, setAlarms] = useState([]);
 
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
       setCurrentTime(now);
-
-      if (isAlarmSet && alarmTime) {
-        const currentTimeStr = now.toTimeString().slice(0, 5);
-        if (currentTimeStr === alarmTime && !isAlarmRinging) {
+      
+      // Check if any alarm should ring
+      const currentTimeString = now.toTimeString().slice(0, 5);
+      alarms.forEach(alarm => {
+        if (alarm.time === currentTimeString && alarm.active && !isAlarmRinging) {
           setIsAlarmRinging(true);
         }
-      }
+      });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [alarmTime, isAlarmSet, isAlarmRinging]);
+  }, [alarms, isAlarmRinging]);
+
+  const setAlarm = () => {
+    if (alarmTime) {
+      const newAlarm = {
+        id: Date.now(),
+        time: alarmTime,
+        active: true
+      };
+      setAlarms([...alarms, newAlarm]);
+      setAlarmTime('');
+      setIsAlarmSet(true);
+    }
+  };
+
+  const deleteAlarm = (id) => {
+    setAlarms(alarms.filter(alarm => alarm.id !== id));
+  };
+
+  const stopAlarm = () => {
+    setIsAlarmRinging(false);
+  };
 
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {
@@ -41,109 +64,123 @@ export default function AlarmClock() {
     });
   };
 
-  const handleSetAlarm = () => {
-    if (alarmTime) {
-      setIsAlarmSet(true);
-    }
-  };
-
-  const handleStopAlarm = () => {
-    setIsAlarmRinging(false);
-    setIsAlarmSet(false);
-    setAlarmTime('');
-  };
-
-  const handleSnooze = () => {
-    setIsAlarmRinging(false);
-    // Snooze for 5 minutes
-    const snoozeTime = new Date();
-    snoozeTime.setMinutes(snoozeTime.getMinutes() + 5);
-    setAlarmTime(snoozeTime.toTimeString().slice(0, 5));
-  };
-
-  const handleHelloWorld = () => {
-    alert('Hello World!');
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
-      <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 max-w-md w-full">
-        {/* Current Time Display */}
-        <div className="text-center mb-8">
-          <div className="text-6xl font-mono font-bold text-white mb-2 tracking-wider">
-            {formatTime(currentTime)}
-          </div>
-          <div className="text-white/80 text-lg">
-            {formatDate(currentTime)}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Macedonian Flag Background */}
+      <div className="absolute inset-0 z-0">
+        {/* Red stripe */}
+        <div className="h-1/3 w-full bg-red-600"></div>
+        {/* White stripe */}
+        <div className="h-1/3 w-full bg-white"></div>
+        {/* Red stripe */}
+        <div className="h-1/3 w-full bg-red-600"></div>
+        
+        {/* Sun design in center */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="relative">
+            {/* Sun rays */}
+            <div className="absolute inset-0">
+              {[...Array(16)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-1 h-16 bg-yellow-400 origin-bottom"
+                  style={{
+                    transform: `rotate(${i * 22.5}deg)`,
+                    left: '50%',
+                    bottom: '50%',
+                    transformOrigin: '50% 100%'
+                  }}
+                />
+              ))}
+            </div>
+            {/* Sun circle */}
+            <div className="w-24 h-24 bg-yellow-400 rounded-full border-4 border-yellow-500 relative z-10"></div>
           </div>
         </div>
+      </div>
 
-        {/* Alarm Status */}
-        {isAlarmRinging && (
-          <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-4 mb-6 animate-pulse">
-            <div className="flex items-center justify-center text-red-300 mb-4">
-              <BellIcon className="h-8 w-8 mr-2" />
-              <span className="text-xl font-semibold">ALARM RINGING!</span>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={handleSnooze}
-                className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg font-semibold transition-colors"
-              >
-                <PauseIcon className="h-5 w-5 inline mr-2" />
-                Snooze
-              </button>
-              <button
-                onClick={handleStopAlarm}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-semibold transition-colors"
-              >
-                Stop
-              </button>
+      {/* Content overlay */}
+      <div className="relative z-10 min-h-screen bg-black bg-opacity-30 flex items-center justify-center p-4">
+        <div className="bg-white bg-opacity-90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 w-full max-w-md">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <ClockIcon className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Alarm Clock</h1>
+            <p className="text-gray-600">{formatDate(currentTime)}</p>
+          </div>
+
+          {/* Current Time Display */}
+          <div className="text-center mb-8">
+            <div className="text-6xl font-mono font-bold text-gray-800 mb-2">
+              {formatTime(currentTime)}
             </div>
           </div>
-        )}
 
-        {/* Alarm Setting */}
-        <div className="space-y-4">
-          <div className="flex items-center text-white/90 mb-3">
-            <ClockIcon className="h-6 w-6 mr-2" />
-            <span className="text-lg font-semibold">Set Alarm</span>
-          </div>
-          
-          <div className="flex gap-3">
-            <input
-              type="time"
-              value={alarmTime}
-              onChange={(e) => setAlarmTime(e.target.value)}
-              className="flex-1 bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
-            />
-            <button
-              onClick={handleSetAlarm}
-              disabled={!alarmTime}
-              className="bg-purple-500 hover:bg-purple-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center"
-            >
-              <PlayIcon className="h-5 w-5 mr-2" />
-              Set
+          {/* Hello World Button */}
+          <div className="text-center mb-6">
+            <button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105">
+              Hello World
             </button>
           </div>
 
-          {isAlarmSet && !isAlarmRinging && (
-            <div className="bg-green-500/20 border border-green-500/50 rounded-lg p-3 text-center">
-              <span className="text-green-300 font-semibold">
-                Alarm set for {alarmTime}
-              </span>
+          {/* Alarm Input */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Set Alarm Time
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="time"
+                value={alarmTime}
+                onChange={(e) => setAlarmTime(e.target.value)}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                onClick={setAlarm}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <BellIcon className="h-4 w-4" />
+                Set
+              </button>
+            </div>
+          </div>
+
+          {/* Active Alarms */}
+          {alarms.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Active Alarms</h3>
+              <div className="space-y-2">
+                {alarms.map(alarm => (
+                  <div key={alarm.id} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
+                    <span className="font-mono text-gray-800">{alarm.time}</span>
+                    <button
+                      onClick={() => deleteAlarm(alarm.id)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      <XMarkIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
-        </div>
 
-        {/* HelloWorld Button */}
-        <div className="mt-6">
-          <button
-            onClick={handleHelloWorld}
-            className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
-          >
-            Hello World
-          </button>
+          {/* Alarm Ringing Modal */}
+          {isAlarmRinging && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-2xl p-8 text-center animate-pulse">
+                <BellIcon className="h-16 w-16 text-red-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">ALARM!</h2>
+                <p className="text-gray-600 mb-6">Time to wake up!</p>
+                <button
+                  onClick={stopAlarm}
+                  className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                  Stop Alarm
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

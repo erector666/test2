@@ -118,7 +118,7 @@ import { PlayIcon, PauseIcon, BackwardIcon, ForwardIcon } from '@heroicons/react
 - ❌ `RewindIcon` → ✅ `BackwardIcon`
 - ❌ `FastForwardIcon` → ✅ `ForwardIcon`
 
-### ✅ Spotify Styling Fixes Applied
+###✅ Spotify Styling Fixes Applied
 
 The app now features proper Spotify-style design:
 
@@ -207,7 +207,7 @@ This project is for educational purposes and is not affiliated with Spotify.
 
 ### v1.2.0 - Latest
 -✅ Fixed all Heroicons import errors
-- ✅ Implemented proper Spotify dark theme
+-✅ Implemented proper Spotify dark theme
 - ✅ Added colorful album covers and gradients
 - ✅ Enhanced mobile responsiveness
 - ✅ Updated documentation with troubleshooting guide

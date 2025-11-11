@@ -1,104 +1,93 @@
-import { HomeIcon, UserIcon, ChartBarIcon, InboxIcon, BellIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, SearchIcon, LibraryIcon, UserIcon } from '@heroicons/react/24/outline';
+import { PlayIcon, PauseIcon, RewindIcon, FastForwardIcon } from '@heroicons/react/20/solid';
+import { useState } from 'react';
 
 const navigation = [
-  { name: 'Dashboard', icon: HomeIcon, current: true },
-  { name: 'Users', icon: UserIcon, current: false },
-  { name: 'Reports', icon: ChartBarIcon, current: false },
-  { name: 'Inbox', icon: InboxIcon, current: false },
-  { name: 'Notifications', icon: BellIcon, current: false }
+{ name: 'Home', icon: HomeIcon },
+{ name: 'Search', icon: SearchIcon },
+{ name: 'Library', icon: LibraryIcon },
+{ name: 'Profile', icon: UserIcon }
 ];
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
+export default function SpotifyClone() {
+const [isPlaying, setIsPlaying] = useState(false);
 
-export default function Dashboard() {
-  return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-        <div className="flex flex-col flex-grow border-r border-gray-200 pt-5 pb-4 bg-white">
-          <div className="flex items-center flex-shrink-0 px-4">
-            <span className="text-xl font-bold text-gray-900">Dashboard</span>
-          </div>
-          <div className="mt-5 flex-1 flex flex-col">
-            <nav className="flex-1 px-2 space-y-1">
-              {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href="#"
-                  className={classNames(
-                    item.current
-                      ? 'bg-blue-50 border-blue-500 text-blue-700'
-                      : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
-                    'group flex items-center px-2 py-2 text-sm font-medium rounded-md border-l-4'
-                  )}
-                >
-                  <item.icon className="mr-3 flex-shrink-0 h-6 w-6 text-gray-400" aria-hidden="true" />
-                  {item.name}
-                </a>
-              ))}
-            </nav>
-          </div>
-        </div>
-      </div>
+return (
+<div className="bg-black text-white">
+{/* Bottom Navigation */}
+<nav className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-700">
+<ul className="flex justify-around py-2">
+{navigation.map((item) => (
+<li key={item.name} className="flex flex-col items-center">
+<item.icon className="h-6 w-6 text-gray-300" />
+<span className="text-xs font-medium">{item.name}</span>
+</li>
+))}
+</ul>
+</nav>
 
-      {/* Main Content */}
-      <div className="md:pl-64 flex flex-col flex-1">
-        <main className="flex-1">
-          <div className="py-6">
-            <div className="px-4 sm:px-6">
-              <h1 className="text-2xl font-semibold text-gray-900">Dashboard Overview</h1>
-            </div>
-            <div className="mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 sm:px-6">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="px-4 py-5 sm:p-6">
-                      <dt className="text-sm font-medium text-gray-500 truncate">Widget {i}</dt>
-                      <dd className="mt-1 text-2xl font-semibold text-gray-900">{i}K</dd>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4 px-4 sm:px-6">
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <ChartBarIcon className="h-6 w-6 text-gray-400" aria-hidden="true" />
-                    </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-sm font-medium text-gray-500 truncate">Performance Metrics</dt>
-                        <dd className="flex items-baseline">
-                          <div className="text-2xl font-semibold text-gray-900">84.7%</div>
-                          <div className="ml-2 flex items-center text-sm font-medium text-green-600">
-                            <svg
-                              className="mr-1 h-5 w-5 flex-shrink-0 text-green-500"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            +12%
-                          </div>
-                        </dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
-  );
+{/* Main Content */}
+<div className="pt-20">
+{/* Recently Played */}
+<div className="px-4">
+<h2 className="text-xl font-semibold mb-2">Recently Played</h2>
+<div className="flex overflow-x-auto">{/* Add album cards here */}{/* Example Album Card */}
+<div className="w-48 h-48 bg-gray-800 rounded-lg mr-4">
+{/* Album Artwork */}
+<img src="https://via.placeholder.com/150" alt="Album Cover" className="object-cover h-full w-full" />
+</div>
+</div>
+</div>
+
+{/* Made For You */}
+<div className="px-4 mt-4">
+<h2 className="text-xl font-semibold mb-2">Made For You</h2>
+{/* Playlist Cards */}
+<div className="flex overflow-x-auto">{/* Add playlist cards here */}
+<div className="w-48 h-48 bg-gray-800 rounded-lg mr-4">
+{/* Playlist Artwork */}
+<img src="https://via.placeholder.com/150" alt="Playlist Cover" className="object-cover h-full w-full" />
+</div>
+</div>
+</div>
+
+{/* Jump Back In */}
+<div className="px-4 mt-4">
+<h2 className="text-xl font-semibold mb-2">Jump Back In</h2>
+{/* Podcast/Episode Cards */}
+<div className="flex overflow-x-auto">{/* Add podcast/episode cards here */}
+<div className="w-48 h-48 bg-gray-800 rounded-lg mr-4">
+{/* Podcast/Episode Artwork */}
+<img src="https://via.placeholder.com/150" alt="Podcast Cover" className="object-cover h-full w-full" />
+</div>
+</div>
+</div>
+</div>
+
+{/* Music Player Bar */}
+<div className="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-700 py-2">
+<div className="flex justify-between items-center px-4">
+{/* Song Info */}
+<div className="flex items-center">
+<img src="https://via.placeholder.com/50" alt="Song Artwork" className="mr-2" />
+<div>
+<h3 className="text-sm font-semibold">Song Title</h3>
+<p className="text-xs text-gray-400">Artist Name</p>
+</div>
+</div>
+
+{/* Controls */}
+<div className="flex items-center">
+<RewindIcon className="h-5 w-5 text-gray-300 cursor-pointer mr-2" />
+{isPlaying ? (
+<PauseIcon className="h-6 w-6 text-green-500 cursor-pointer" onClick={() => setIsPlaying(false)} />
+) : (
+<PlayIcon className="h-6 w-6 text-green-500 cursor-pointer" onClick={() => setIsPlaying(true)} />
+)}
+<FastForwardIcon className="h-5 w-5 text-gray-300 cursor-pointer ml-2" />
+</div>
+</div>
+</div>
+</div>
+);
 }

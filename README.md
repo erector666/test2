@@ -94,6 +94,34 @@ npm run dev
 - **Made For You:** Personalized playlist recommendations
 - **Jump Back In:** Quick access to recent content
 
+## Troubleshooting
+
+### Heroicons Import Errors
+
+If you encounter import errors with Heroicons, make sure you're using the correct icon names:
+
+**Correct imports:**
+```javascript
+// For outline icons (24px)
+import { HomeIcon, MagnifyingGlassIcon, BookmarkIcon, UserIcon } from '@heroicons/react/24/outline';
+
+// For solid icons (24px)
+import { PlayIcon, PauseIcon, BackwardIcon, ForwardIcon } from '@heroicons/react/24/solid';
+```
+
+**Common mistakes:**
+- ❌ `SearchIcon` →✅ `MagnifyingGlassIcon`
+- ❌ `LibraryIcon` → ✅ `BookmarkIcon`
+- ❌ `RewindIcon` → ✅ `BackwardIcon`
+- ❌ `FastForwardIcon` → ✅ `ForwardIcon`
+
+### Build Errors
+
+If the build fails on Vercel:
+1. Check that all imports are correct
+2. Ensure all JSX is properly formatted
+3. Verify that all dependencies are listed in `package.json`
+
 ## Deployment
 
 The app is configured for easy deployment on Vercel:

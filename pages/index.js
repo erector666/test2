@@ -1,24 +1,31 @@
 import Head from 'next/head';
-import AlarmClock from '../components/AlarmClock';
+import styles from '../styles/globals.css';
 
 export default function Home() {
+const weatherData = {
+location: 'London',
+temperature:20,
+condition: 'Sunny',
+};
+
 return (
-<div>
+<div className="bg-black text-white">
 <Head>
 <title>Spotify Clone</title>
-<link rel="icon" href="/favicon.ico" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" />
 </Head>
 
-<main className="bg-black min-h-screen">
-<AlarmClock />
+<main className="container mx-auto py-8">
+<h1>Spotify Mobile Clone</h1>
 
-{/* Weather Panel */} 
-<div className="bg-gray-800 text-white p-4 rounded-lg shadow-md">
-<h2 className="text-lg font-semibold">Weather</h2>
-<p>Temperature:25°C</p>
-<p>Condition: Sunny</p>
-<p>Location: London</p>
+<section className="mt-8">
+<h2>Weather</h2>
+<div className="bg-gray-800 rounded-lg p-4 shadow-md">
+<p className="text-lg font-semibold">{weatherData.location}</p>
+<p className="text-xl">Temperature: {weatherData.temperature}°C</p>
+<p>Condition: {weatherData.condition}</p>
 </div>
+</section>
 </main>
 </div>
 );
